@@ -1,0 +1,122 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* ☀️ LIGHT MODE: Warm off-white base, muted teal brand, sand/orange accents */
+    --bg: #FFFFFF;
+    --surface: #FAF8F3;
+    --elev: #F2EFE7;
+    --line: #E8E3D8;
+    --ink: #2D2B27;
+    --sub: #6B665B;
+    --mute: #8A8579;
+    --brand: #5F8F9C;
+    --ok: #4F9A73;
+    --bad: #D0645A;
+    --warn: #E9A67A;
+    --okbg: #E6F1EA;
+    --badbg: #F8E6E3;
+  }
+
+  .dark {
+    /* 🌙 DARK MODE: Deep black base, zinc surfaces & soft neon functional accents */
+    --bg: #000000;
+    --surface: #0A0A0A;
+    --elev: #171717;
+    --line: #262626;
+    --ink: #F5F5F5;
+    --sub: #A3A3A3;
+    --mute: #737373;
+    --brand: #7FB0BD;
+    --ok: #6CC08F;
+    --bad: #E5827A;
+    --warn: #E9A67A;
+    --okbg: #0F2A1D;
+    --badbg: #3A1A17;
+  }
+
+  html {
+    color-scheme: light;
+  }
+
+  html.dark {
+    color-scheme: dark;
+  }
+
+  body {
+    background-color: var(--bg);
+    color: var(--ink);
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    min-height: 100vh;
+    margin: 0;
+    padding: 0;
+  }
+
+  /* 7. Smooth theme transition (Light <-> Dark) */
+  * {
+    transition: background-color .35s ease, border-color .35s ease, color .35s ease, fill .35s ease, stroke .35s ease;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--brand);
+    outline-offset: 2px;
+  }
+}
+
+/* 4. Card hover lift animation */
+.lift {
+  transition: transform .2s ease, box-shadow .2s ease, background-color .35s, border-color .35s;
+}
+
+.lift:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 24px -10px rgba(15, 23, 42, .25);
+}
+
+/* 5. Skeleton shimmer animation */
+.sk {
+  border-radius: 10px;
+  background: linear-gradient(90deg, var(--elev) 25%, var(--line) 50%, var(--elev) 75%);
+  background-size: 200% 100%;
+  animation: sh 1.3s linear infinite;
+}
+
+@keyframes sh {
+  to {
+    background-position: -200% 0;
+  }
+}
+
+/* 3. Sidebar active pill transition */
+.pill {
+  transition: transform .35s cubic-bezier(.4, 0, .2, 1);
+}
+
+/* 6. Toast notifications transition */
+.toast {
+  transition: transform .35s cubic-bezier(.2, .8, .2, 1), opacity .3s;
+  transform: translateX(120%);
+  opacity: 0;
+}
+
+.toast.in {
+  transform: none;
+  opacity: 1;
+}
+
+/* Accessibility: Respect Reduced Motion preferences */
+@media (prefers-reduced-motion: reduce) {
+
+  *,
+  .sk,
+  .lift,
+  .pill,
+  .toast {
+    animation-duration: .01ms !important;
+    transition-duration: .01ms !important;
+  }
+}
