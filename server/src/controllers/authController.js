@@ -10,7 +10,7 @@ export const signup = async (req, res, next) => {
         return res.status(201).json({
             success: true,
             message: "User registered successfully",
-            data: { user }
+            data: { user, token }
         });
     } catch (error) {
         next(error);
@@ -23,11 +23,11 @@ export const login = async (req, res, next) => {
         const { user, token } = await authService.loginUser({ email, password });
         setAuthCookie(res, token);
 
-        return res.status(201).json({
+        return res.status(200).json({
             success: true,
             message: "User login successfully",
-            data: { user }
-        })
+            data: { user, token }
+        });
     } catch (error) {
         next(error);
     }

@@ -17,9 +17,11 @@ export const AuthProvider = ({ children }) => {
                 setUser(res.data.user);
             } else {
                 setUser(null);
+                localStorage.removeItem('notifyhub_token');
             }
         } catch (err) {
             setUser(null);
+            localStorage.removeItem('notifyhub_token');
         } finally {
             setLoading(false);
         }
@@ -33,6 +35,9 @@ export const AuthProvider = ({ children }) => {
     const login = async (email, password) => {
         try {
             const res = await api.post('/auth/login', { email, password });
+            if (res.data?.token) {
+                localStorage.setItem('notifyhub_token', res.data.token);
+            }
             setUser(res.data.user);
             toast.success('Welcome back!', `Logged in as ${res.data.user.name}`);
             return res;
@@ -46,6 +51,9 @@ export const AuthProvider = ({ children }) => {
     const signup = async (name, email, password) => {
         try {
             const res = await api.post('/auth/signup', { name, email, password });
+            if (res.data?.token) {
+                localStorage.setItem('notifyhub_token', res.data.token);
+            }
             setUser(res.data.user);
             toast.success('Account Created!', `Welcome to NotifyHub, ${res.data.user.name}`);
             return res;
@@ -59,10 +67,12 @@ export const AuthProvider = ({ children }) => {
     const logout = async () => {
         try {
             await api.post('/auth/logout');
+        } catch (err) {
+            // ignore network/cookie clear errors
+        } finally {
+            localStorage.removeItem('notifyhub_token');
             setUser(null);
             toast.info('Logged Out', 'You have been safely logged out.');
-        } catch (err) {
-            setUser(null);
         }
     };
 
