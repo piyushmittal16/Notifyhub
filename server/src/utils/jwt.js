@@ -12,19 +12,21 @@ export const verifyToken = (token) => {
 };
 
 export const setAuthCookie = (res, token) => {
+    const isProduction = config.env === 'production';
     const cookieOptions = {
         httpOnly: true,
-        secure: config.env === 'production',
-        sameSite: 'lax',
+        secure: isProduction,
+        sameSite: isProduction ? 'none' : 'lax',
         maxAge: 7 * 24 * 60 * 60 * 1000
     };
-    res.cookie('token', token, cookieOptions)
+    res.cookie('token', token, cookieOptions);
 };
 
 export const clearAuthCookie = (res) => {
+    const isProduction = config.env === 'production';
     res.clearCookie('token', {
         httpOnly: true,
-        secure: config.env === 'prodiction',
-        sameSite: 'lax'
+        secure: isProduction,
+        sameSite: isProduction ? 'none' : 'lax'
     });
 };
