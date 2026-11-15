@@ -16,12 +16,13 @@ export const config = {
     clientOrigin: process.env.CLIENT_ORIGIN || "http://localhost:5173",
 
     // 💌 Email Config yaha daalo:
+    brevoApiKey: process.env.BREVO_API_KEY || '',
     resendApiKey: process.env.RESEND_API_KEY || '',
     email: {
         host: process.env.EMAIL_HOST || 'smtp.ethereal.email',
         port: parseInt(process.env.EMAIL_PORT || '587', 10),
-        user: process.env.EMAIL_USER || '',
+        user: process.env.EMAIL_USER || 'piyushbharattapp@gmail.com',
         pass: process.env.EMAIL_PASS || '',
-        from: process.env.EMAIL_FROM || 'NotifyHub <onboarding@resend.dev>'
+        from: process.env.EMAIL_FROM || 'NotifyHub <piyushbharattapp@gmail.com>'
     }
 };
