@@ -3,7 +3,6 @@ import { EmailLog } from '../models/EmailLog.js';
 import { sendEmail } from '../config/email.js';
 import { renderTemplate } from '../utils/templateEngine.js';
 import { AppError } from '../utils/appError.js';
-import nodemailer from 'nodemailer';
 
 // Valid email regex
 const EMAIL_REGEX = /^\S+@\S+\.\S+$/;
@@ -62,8 +61,7 @@ export const sendTransactionalEmail = async ({ project, templateId, to, variable
             message: 'Email delivered successfully.',
             data: {
                 logId: emailLog._id,
-                messageId: info.messageId,
-                previewUrl: nodemailer.getTestMessageUrl(info) || undefined
+                messageId: info.messageId
             }
         };
     } catch (error) {

@@ -15,14 +15,10 @@ export const config = {
     jwtSecret: process.env.JWT_SECRET || 'dev_secret_key',
     clientOrigin: process.env.CLIENT_ORIGIN || "http://localhost:5173",
 
-    // 💌 Email Config yaha daalo:
+    // 💌 Email Configuration (Brevo HTTPS API)
     brevoApiKey: process.env.BREVO_API_KEY || '',
-    resendApiKey: process.env.RESEND_API_KEY || '',
     email: {
-        host: process.env.EMAIL_HOST || 'smtp.ethereal.email',
-        port: parseInt(process.env.EMAIL_PORT || '587', 10),
-        user: process.env.EMAIL_USER || 'piyushbharattapp@gmail.com',
-        pass: process.env.EMAIL_PASS || '',
-        from: process.env.EMAIL_FROM || 'NotifyHub <piyushbharattapp@gmail.com>'
+        senderEmail: process.env.EMAIL_USER || 'piyushbharattapp@gmail.com',
+        senderName: process.env.EMAIL_SENDER_NAME || 'NotifyHub'
     }
 };
