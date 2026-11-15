@@ -180,6 +180,30 @@ const runSmokeTest = async () => {
         logPass(8, `Analytics Aggregated (Total: ${total}, Sent: ${sent}, Rate: 100%)`);
 
         // ---------------------------------------------------------------------
+        // 9. Teardown / Auto-Cleanup Test Artifacts
+        // ---------------------------------------------------------------------
+        try {
+            const { connectDB } = await import('../config/db.js');
+            const { User } = await import('../models/User.js');
+            const { Project } = await import('../models/Project.js');
+            const { Template } = await import('../models/Template.js');
+            const { EmailLog } = await import('../models/EmailLog.js');
+            const mongoose = (await import('mongoose')).default;
+
+            await connectDB();
+            if (projectId) {
+                await Template.deleteMany({ projectId });
+                await EmailLog.deleteMany({ projectId });
+                await Project.deleteOne({ _id: projectId });
+            }
+            await User.deleteOne({ email: testUser.email });
+            await mongoose.connection.close(false);
+            console.log(`  ${colors.cyan}🧹 Auto-Teardown: Test user & artifacts purged from database.${colors.reset}`);
+        } catch (cleanupErr) {
+            console.warn('  ⚠️ Cleanup warning:', cleanupErr.message);
+        }
+
+        // ---------------------------------------------------------------------
         // Final Summary
         // ---------------------------------------------------------------------
         console.log(`\n${colors.bold}${colors.green}====================================================${colors.reset}`);
