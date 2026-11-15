@@ -17,8 +17,8 @@ export const AppLayout = () => {
         {/* Left Sidebar */}
         <Sidebar />
 
-        {/* Main Content Area */}
-        <main className="flex-1 min-w-0 p-4 sm:p-6 max-w-6xl">
+        {/* Main Content Area: pb-24 on mobile so fixed bottom nav never overlaps */}
+        <main className="flex-1 min-w-0 p-3 sm:p-6 max-w-6xl pb-24 md:pb-6 overflow-x-hidden">
           <Outlet />
         </main>
       </div>

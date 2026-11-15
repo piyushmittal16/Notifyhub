@@ -59,6 +59,42 @@ export const DashboardPage = () => {
   const failedCount = useCountUp(stats.failed, 1200);
   const rateVal = parseFloat(stats.successRate) || 0;
 
+  // 7-Day Normalized Timeline for Combo Bar + Line Chart
+  const chartDays = React.useMemo(() => {
+    const days = [];
+    for (let i = 6; i >= 0; i--) {
+      const d = new Date();
+      d.setDate(d.getDate() - i);
+      const dateStr = d.toISOString().slice(0, 10);
+      const shortDay = d.toLocaleDateString('en-US', { weekday: 'short' });
+      const dayNum = d.toLocaleDateString('en-US', { month: 'numeric', day: 'numeric' });
+
+      // Match dailyData
+      const sentItem = dailyData.find(
+        (item) => item._id?.date === dateStr && item._id?.status === 'sent'
+      );
+      const failedItem = dailyData.find(
+        (item) => item._id?.date === dateStr && item._id?.status === 'failed'
+      );
+
+      const sent = sentItem ? sentItem.count : 0;
+      const failed = failedItem ? failedItem.count : 0;
+      const total = sent + failed;
+
+      days.push({
+        date: dateStr,
+        shortDay,
+        dayNum,
+        sent,
+        failed,
+        total,
+      });
+    }
+    return days;
+  }, [dailyData]);
+
+  const maxTotal = Math.max(5, ...chartDays.map((d) => d.total));
+
   // Format relative timestamp
   const formatTime = (dateStr) => {
     if (!dateStr) return 'Just now';
@@ -86,14 +122,14 @@ export const DashboardPage = () => {
   return (
     <div className="space-y-6">
       {/* 1. Header & Quick Action Buttons */}
-      <div className="flex flex-wrap items-center justify-between gap-3">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-bold text-ink tracking-tight">Analytics</h1>
-          <p className="text-sub text-xs mt-1">
+          <h1 className="text-xl sm:text-2xl font-bold text-ink tracking-tight">Analytics</h1>
+          <p className="text-sub text-xs mt-0.5 sm:mt-1 truncate max-w-xs sm:max-w-none">
             Delivery health for <b className="text-ink font-medium">{selectedProject?.name}</b> · last 7 days
           </p>
         </div>
-        <div className="flex flex-wrap items-center gap-2">
+        <div className="flex items-center gap-2 self-start sm:self-auto">
           <button
             onClick={() => fetchDashboardData()}
             className="p-2 rounded-xl border border-line bg-surface hover:bg-elev text-sub hover:text-ink transition-colors cursor-pointer"
@@ -114,7 +150,7 @@ export const DashboardPage = () => {
       {/* 2. Skeleton Loading View (Section 4.5) */}
       {loading ? (
         <div className="space-y-6 animate-pulse">
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
             <div className="sk h-28" />
             <div className="sk h-28" />
             <div className="sk h-28" />
@@ -127,54 +163,54 @@ export const DashboardPage = () => {
         /* 3. Real Live Dashboard Content */
         <div className="space-y-6 animate-in fade-in duration-300">
           {/* Top Metric Cards (Section 4.4 Lift hover) */}
-          <section className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+          <section className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
             {/* Total Emails */}
-            <div className="lift bg-surface border border-line rounded-xl p-4 flex flex-col justify-between">
+            <div className="lift bg-surface border border-line rounded-xl p-3.5 sm:p-4 flex flex-col justify-between">
               <div className="flex justify-between items-center text-sub text-xs">
                 <span>Total emails</span>
                 <span className="w-7 h-7 rounded-lg bg-elev grid place-items-center text-ink">
                   <Mail className="w-3.5 h-3.5" />
                 </span>
               </div>
-              <div className="text-3xl font-bold mt-2 text-ink">{totalCount}</div>
+              <div className="text-2xl sm:text-3xl font-bold mt-2 text-ink">{totalCount}</div>
               <div className="text-[11px] mt-1 text-ok font-medium flex items-center gap-0.5">
                 <ArrowUpRight className="w-3 h-3" /> 100% tracked
               </div>
             </div>
 
             {/* Delivered (Sent) */}
-            <div className="lift bg-surface border border-line rounded-xl p-4 flex flex-col justify-between">
+            <div className="lift bg-surface border border-line rounded-xl p-3.5 sm:p-4 flex flex-col justify-between">
               <div className="flex justify-between items-center text-sub text-xs">
                 <span>Delivered</span>
                 <span className="w-7 h-7 rounded-lg grid place-items-center text-ok" style={{ background: 'var(--okbg)' }}>
                   <CheckCircle2 className="w-3.5 h-3.5" />
                 </span>
               </div>
-              <div className="text-3xl font-bold mt-2 text-ok">{sentCount}</div>
+              <div className="text-2xl sm:text-3xl font-bold mt-2 text-ok">{sentCount}</div>
               <div className="text-[11px] mt-1 text-ok font-medium">Successful delivery</div>
             </div>
 
             {/* Failed */}
-            <div className="lift bg-surface border border-line rounded-xl p-4 flex flex-col justify-between">
+            <div className="lift bg-surface border border-line rounded-xl p-3.5 sm:p-4 flex flex-col justify-between">
               <div className="flex justify-between items-center text-sub text-xs">
                 <span>Failed</span>
                 <span className="w-7 h-7 rounded-lg grid place-items-center text-bad" style={{ background: 'var(--badbg)' }}>
                   <AlertCircle className="w-3.5 h-3.5" />
                 </span>
               </div>
-              <div className="text-3xl font-bold mt-2 text-bad">{failedCount}</div>
-              <div className="text-[11px] mt-1 text-mute">Rejected or SMTP error</div>
+              <div className="text-2xl sm:text-3xl font-bold mt-2 text-bad">{failedCount}</div>
+              <div className="text-[11px] mt-1 text-mute">Rejected / SMTP error</div>
             </div>
 
             {/* Success Rate */}
-            <div className="lift bg-surface border border-line rounded-xl p-4 flex flex-col justify-between">
+            <div className="lift bg-surface border border-line rounded-xl p-3.5 sm:p-4 flex flex-col justify-between">
               <div className="flex justify-between items-center text-sub text-xs">
                 <span>Success rate</span>
                 <span className="w-7 h-7 rounded-lg bg-elev grid place-items-center text-brand">
                   <Percent className="w-3.5 h-3.5" />
                 </span>
               </div>
-              <div className="text-3xl font-bold mt-2 text-ink">{rateVal}%</div>
+              <div className="text-2xl sm:text-3xl font-bold mt-2 text-ink">{rateVal}%</div>
               <div className="mt-2 h-1.5 rounded-full bg-elev overflow-hidden">
                 <div
                   className="h-full bg-brand rounded-full transition-all duration-1000 ease-out"
@@ -184,48 +220,124 @@ export const DashboardPage = () => {
             </div>
           </section>
 
-          {/* Daily Delivery Trends Chart */}
-          <section className="bg-surface border border-line rounded-xl p-5">
-            <div className="flex flex-wrap items-center justify-between gap-2 mb-6">
+          {/* Daily Delivery Trends (Combo Bar + Line Chart) */}
+          <section className="bg-surface border border-line rounded-xl p-4 sm:p-5">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6">
               <div>
-                <h2 className="text-base font-semibold text-ink">Daily delivery trends</h2>
-                <p className="text-sub text-xs">Recent email volume over time</p>
+                <h2 className="text-base font-semibold text-ink">Daily Delivery Trends</h2>
+                <p className="text-sub text-xs">Email dispatch volume over the last 7 days</p>
               </div>
-              <div className="flex items-center gap-4 text-xs">
+              <div className="flex flex-wrap items-center gap-3 sm:gap-4 text-xs">
                 <span className="flex items-center gap-1.5 text-sub">
-                  <i className="w-2.5 h-2.5 rounded-full bg-ok" /> Delivered
+                  <i className="w-2.5 h-2.5 rounded-full bg-brand" /> Total Volume
                 </span>
                 <span className="flex items-center gap-1.5 text-sub">
-                  <i className="w-2.5 h-2.5 rounded-full bg-bad" /> Failed
+                  <i className="w-2.5 h-2.5 rounded-full bg-ok" /> Delivered ({stats.sent})
                 </span>
+                {stats.failed > 0 && (
+                  <span className="flex items-center gap-1.5 text-sub">
+                    <i className="w-2.5 h-2.5 rounded-full bg-bad" /> Failed ({stats.failed})
+                  </span>
+                )}
               </div>
             </div>
 
-            {/* Chart Container */}
-            <div className="h-48 flex items-end gap-3 pt-6 border-b border-line px-2">
-              {dailyData.length === 0 ? (
-                <div className="w-full h-full flex flex-col items-center justify-center text-xs text-mute">
-                  No email history recorded for the selected timeframe.
-                </div>
-              ) : (
-                dailyData.map((d, i) => (
-                  <div key={i} className="flex-1 flex flex-col items-center gap-2 h-full justify-end group relative">
-                    {/* Tooltip on hover */}
-                    <div className="absolute -top-10 opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity bg-surface border border-line px-2.5 py-1 rounded-lg shadow-lg text-[10px] text-ink z-10 whitespace-nowrap">
-                      {d._id?.date}: <b>{d.count}</b> ({d._id?.status})
-                    </div>
-                    {/* Bar */}
+            {/* Chart Area with Overlay Line Graph */}
+            <div className="relative pt-6 pb-2">
+              {/* Overlay SVG Line Graph with Gradient & Glow */}
+              <div className="absolute inset-x-0 top-6 bottom-10 px-2 sm:px-6 pointer-events-none">
+                <svg className="w-full h-full overflow-visible" viewBox="0 0 700 120" preserveAspectRatio="none">
+                  <defs>
+                    <linearGradient id="lineTrendGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                      <stop offset="0%" stopColor="#5F8F9C" stopOpacity="0.9" />
+                      <stop offset="100%" stopColor="#7FB0BD" stopOpacity="1" />
+                    </linearGradient>
+                    <linearGradient id="areaTrendGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+                      <stop offset="0%" stopColor="#5F8F9C" stopOpacity="0.25" />
+                      <stop offset="100%" stopColor="#5F8F9C" stopOpacity="0.0" />
+                    </linearGradient>
+                  </defs>
+
+                  {/* Filled Area under the curve */}
+                  <polygon
+                    points={`50,110 ${chartDays.map((d, i) => `${(i * 100) + 50},${Math.round(110 - (d.total / maxTotal) * 85)}`).join(' ')} 650,110`}
+                    fill="url(#areaTrendGrad)"
+                    className="transition-all duration-700"
+                  />
+
+                  {/* Trend Polyline */}
+                  <polyline
+                    fill="none"
+                    stroke="url(#lineTrendGrad)"
+                    strokeWidth="3"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    points={chartDays.map((d, i) => `${(i * 100) + 50},${Math.round(110 - (d.total / maxTotal) * 85)}`).join(' ')}
+                    className="transition-all duration-700"
+                  />
+
+                  {/* Data Points (Glowing Dots) */}
+                  {chartDays.map((d, i) => {
+                    const cx = (i * 100) + 50;
+                    const cy = Math.round(110 - (d.total / maxTotal) * 85);
+                    return (
+                      <g key={i}>
+                        <circle
+                          cx={cx}
+                          cy={cy}
+                          r="5"
+                          className="fill-surface stroke-brand stroke-2 shadow-sm transition-all duration-500"
+                        />
+                        <circle
+                          cx={cx}
+                          cy={cy}
+                          r="2.5"
+                          className="fill-brand transition-all duration-500"
+                        />
+                      </g>
+                    );
+                  })}
+                </svg>
+              </div>
+
+              {/* 7 Animated Columns (Bar Graph) */}
+              <div className="h-44 flex items-end justify-between gap-1 sm:gap-4 px-1 sm:px-6 border-b border-line">
+                {chartDays.map((d, i) => {
+                  const heightPercent = Math.max(8, (d.total / maxTotal) * 100);
+                  return (
                     <div
-                      className={`w-full max-w-[36px] rounded-t-lg transition-all duration-500 ${d._id?.status === 'sent' ? 'bg-ok/80 hover:bg-ok' : 'bg-bad/80 hover:bg-bad'
-                        }`}
-                      style={{ height: `${Math.min(100, Math.max(15, d.count * 20))}%` }}
-                    />
-                    <span className="text-[10px] text-mute truncate max-w-[48px]">
-                      {d._id?.date?.slice(5)}
-                    </span>
-                  </div>
-                ))
-              )}
+                      key={i}
+                      className="flex-1 flex flex-col items-center justify-end h-full group relative z-10"
+                    >
+                      {/* Count Badge (Always Visible & Animated) */}
+                      <div className="mb-2 text-[10px] sm:text-xs font-semibold text-ink group-hover:scale-110 transition-transform">
+                        {d.total}
+                      </div>
+
+                      {/* Bar Column with Background Track */}
+                      <div className="w-full max-w-[26px] sm:max-w-[42px] h-28 bg-elev/50 rounded-t-lg overflow-hidden flex items-end">
+                        <div
+                          className="w-full rounded-t-lg bg-gradient-to-t from-brand/70 to-brand hover:from-brand hover:to-brand-light transition-all duration-700 ease-out shadow-sm"
+                          style={{
+                            height: `${heightPercent}%`,
+                            boxShadow: d.total > 0 ? '0 0 12px rgba(95, 143, 156, 0.35)' : 'none'
+                          }}
+                        />
+                      </div>
+
+                      {/* Day Label */}
+                      <div className="text-center mt-2.5">
+                        <span className="block text-[10px] sm:text-[11px] font-medium text-ink">
+                          {d.shortDay}
+                        </span>
+                        <span className="block text-[8px] sm:text-[9px] text-mute">
+                          {d.dayNum}
+                        </span>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
             </div>
           </section>
 

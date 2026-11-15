@@ -77,13 +77,13 @@ export const Navbar = () => {
       <div className="relative ml-2" ref={projectMenuRef}>
         <button
           onClick={() => setProjectDropdownOpen(!projectDropdownOpen)}
-          className="hidden sm:flex items-center gap-2 border border-line rounded-lg px-3 py-1.5 text-sub hover:bg-elev text-xs font-medium cursor-pointer transition-colors"
+          className="flex items-center gap-1.5 sm:gap-2 border border-line rounded-lg px-2 sm:px-3 py-1.5 text-sub hover:bg-elev text-xs font-medium cursor-pointer transition-colors max-w-[140px] sm:max-w-[220px]"
         >
-          <span>Project:</span>
-          <b className="text-ink font-semibold max-w-[140px] truncate">
+          <span className="hidden sm:inline">Project:</span>
+          <b className="text-ink font-semibold truncate">
             {selectedProject ? selectedProject.name : 'No Projects'}
           </b>
-          <ChevronDown className="w-3.5 h-3.5 text-mute" />
+          <ChevronDown className="w-3.5 h-3.5 text-mute shrink-0" />
         </button>
 
         {projectDropdownOpen && (

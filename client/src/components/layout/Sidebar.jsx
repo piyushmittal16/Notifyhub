@@ -33,16 +33,40 @@ export const Sidebar = () => {
   });
 
   return (
-    <aside className="w-14 sm:w-56 shrink-0 border-r border-line bg-surface min-h-[calc(100vh-3.5rem)] p-2 sm:p-3">
-      <nav className="nav relative flex flex-col gap-1">
-        {/* 3. Sliding Active Pill */}
-        {activeIndex !== -1 && (
-          <div
-            className="pill absolute left-0 right-0 h-10 rounded-lg bg-brand pointer-events-none"
-            style={{ transform: `translateY(${activeIndex * 44}px)` }}
-          />
-        )}
+    <>
+      {/* 💻 Desktop Sidebar (md:block) */}
+      <aside className="hidden md:block w-56 shrink-0 border-r border-line bg-surface min-h-[calc(100vh-3.5rem)] p-3">
+        <nav className="nav relative flex flex-col gap-1">
+          {/* 3. Sliding Active Pill */}
+          {activeIndex !== -1 && (
+            <div
+              className="pill absolute left-0 right-0 h-10 rounded-lg bg-brand pointer-events-none"
+              style={{ transform: `translateY(${activeIndex * 44}px)` }}
+            />
+          )}
 
+          {navItems.map((item, index) => {
+            const Icon = item.icon;
+            const isActive = index === activeIndex;
+
+            return (
+              <NavLink
+                key={item.path}
+                to={item.path}
+                className={`relative z-10 h-10 flex items-center gap-3 px-3 rounded-lg font-medium text-sm transition-colors ${
+                  isActive ? 'text-white' : 'text-sub hover:text-ink'
+                }`}
+              >
+                <Icon className="w-4 h-4 shrink-0 transition-transform duration-200" />
+                <span className="truncate">{item.name}</span>
+              </NavLink>
+            );
+          })}
+        </nav>
+      </aside>
+
+      {/* 📱 Mobile Fixed Bottom Navigation Bar (< md) */}
+      <nav className="md:hidden fixed bottom-0 left-0 right-0 h-16 bg-surface/95 backdrop-blur-md border-t border-line flex items-center justify-around px-2 z-40 shadow-lg">
         {navItems.map((item, index) => {
           const Icon = item.icon;
           const isActive = index === activeIndex;
@@ -51,16 +75,18 @@ export const Sidebar = () => {
             <NavLink
               key={item.path}
               to={item.path}
-              className={`relative z-10 h-10 flex items-center gap-3 px-3 rounded-lg font-medium text-sm transition-colors ${
-                isActive ? 'text-white' : 'text-sub hover:text-ink'
+              className={`flex flex-col items-center justify-center gap-1 flex-1 py-1 rounded-lg text-[10px] font-medium transition-all ${
+                isActive ? 'text-brand font-semibold' : 'text-sub hover:text-ink'
               }`}
             >
-              <Icon className="w-4 h-4 shrink-0 transition-transform duration-200" />
-              <span className="hidden sm:inline truncate">{item.name}</span>
+              <div className={`p-1 rounded-lg transition-all ${isActive ? 'bg-brand/10 scale-105' : ''}`}>
+                <Icon className={`w-4 h-4 ${isActive ? 'text-brand stroke-[2.5]' : ''}`} />
+              </div>
+              <span className="truncate max-w-[64px]">{item.name}</span>
             </NavLink>
           );
         })}
       </nav>
-    </aside>
+    </>
   );
 };
